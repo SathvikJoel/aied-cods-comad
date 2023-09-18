@@ -24,6 +24,8 @@ def main():
 
     print(f'Length of the augumented dataset {len(data)}')
 
+    print(data['label'].value_counts())
+
     # seperate into folds
 
     data['kfold'] = -1
@@ -32,10 +34,15 @@ def main():
 
     y = data.label.values
 
-    kf = model_selection.StratifiedGroupKFold(n_splits=5)
+    print(y)
+
+    kf = model_selection.StratifiedKFold(n_splits=5)
 
     for f, (t_, v_) in enumerate(kf.split(X = data, y = y)):
+        
         data.loc[v_, 'kfold'] = f
+
+    print(data['kfold'].value_counts())
 
     data.to_csv(os.path.join('..', 'input', 'train_folds.csv'), index = False)
 
