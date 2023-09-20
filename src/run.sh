@@ -10,4 +10,4 @@
 source /home/ksjoe30/projects/def-fard/ksjoe30/ubc/bin/activate
 
 
-python training_constrastiveLoss.py
+python trinaing_SoftmaxLoss.py
