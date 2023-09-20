@@ -11,15 +11,23 @@ def get_transcript(video_name):
     else:
         return val 
 
-
-model = SentenceTransformer('stsb-distilbert-base')
-num_epochs = 10
+print("*************** Script Started *****************\n")
+modelPath = os.path.join('..', 'models', 'stsb-distilbert-base')
+model = SentenceTransformer(modelPath)
+print("\n\n******* MODEL LOADED ***********")
+print(model)
+print("********************************")
+num_epochs = 100
 train_batch_size = 64
 distance_metric = losses.SiameseDistanceMetric.COSINE_DISTANCE
-output_path = os.path.join('..', 'models')
+output_path = os.path.join('..', 'models', 'secondmodel')
+# create the directory if it doesnt exisit
+
+os.makedirs(output_path, exist_ok=True)
+
 margin = 0.5
 
-
+print("******************* load and slice data ********************")
 ################## LOAD AND SLICE DATA #####################
 data = pd.read_csv(os.path.join('..', 'input', 'train_folds.csv'))
 train_data = data[data['kfold'] != 1]
@@ -60,6 +68,7 @@ model.fit(
     train_objectives=[(train_dataloader, train_loss)],
     evaluator=seq_evaluator,
     epochs = num_epochs,
-    warmup_steps=100,
-    output_path=output_path
+    warmup_steps=10,
+    output_path=output_path,
+    show_progress_bar=False
 )
