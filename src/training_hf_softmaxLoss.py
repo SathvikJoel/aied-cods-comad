@@ -31,7 +31,11 @@ train_dataset = train_dataset.map(lambda x: {'pre_requisite' : get_transcript(x[
 
 dev_dataset = dev_dataset.map(lambda x: {'pre_requisite' : get_transcript(x['pre_requisite']), 'concept': get_transcript(x['concept'])})
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+# load the tokenizer and model
+modelPath = os.path.join('..', 'models', 'bert-base-uncased')
+tokenizer = BertTokenizer.from_pretrained(modelPath)
+model = BertModel.from_pretrained(modelPath).to(device)
 
 full_datasets = [train_dataset, dev_dataset]
 transformed_datasets = []
@@ -62,7 +66,6 @@ dev_loader = torch.utils.data.DataLoader(
     dev_dataset, batch_size, shuffle = True
 )
 
-model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
 def mean_pool(token_embeds, attention_mask):
     # reshape attention_mask to cover 768-dimension embeddings

@@ -9,6 +9,15 @@
 
 source /home/ksjoe30/projects/def-fard/ksjoe30/ubc/bin/activate
 
+module load gcc/9.3.0 arrow/8 python/3.8
+pip list | grep pyarrow
+
+pip install --no-index datasets
+pip list | grep datasets
+
+pip install --no-index transformers
+pip list | grep transformers
+
 pip install torch --no-index
 
-python training_softmaxLoss.py --dataset without_agumentation --sentence_selection extracted
+python training_hf_softmaxLoss.py
