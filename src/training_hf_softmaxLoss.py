@@ -4,6 +4,8 @@ import os
 from transformers import BertTokenizer, BertModel
 import torch
 
+print("Starting script training_hf_spftmaxLoss.py")
+print("*************** Script Started *****************\n")
 def get_transcript(video_name):
     val = meta_data.get(video_name, default=None)
     if val is None :
