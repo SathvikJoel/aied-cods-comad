@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from transformers import BertTokenizer, BertModel
 import torch
+from transformers.optimization import get_linear_schedule_with_warmup
 
 print("Starting script training_hf_spftmaxLoss.py")
 print("*************** Script Started *****************\n")
@@ -61,7 +62,7 @@ dev_loader = torch.utils.data.DataLoader(
     dev_dataset, batch_size, shuffle = True
 )
 
-model = BertModel.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
 def mean_pool(token_embeds, attention_mask):
     # reshape attention_mask to cover 768-dimension embeddings
@@ -79,7 +80,6 @@ ffnn.to(device)
 
 loss_func = torch.nn.CrossEntropyLoss()
 
-from transformers.optimization import get_linear_schedule_with_warmup
 
 optim = torch.optim.Adam(model.parameters(), lr=2e-5)
 # and setup a warmup for the first ~10% steps
@@ -90,18 +90,17 @@ scheduler = get_linear_schedule_with_warmup(
   	num_training_steps=total_steps - warmup_steps
 )
 
-from tqdm.auto import auto
 num_epoch = 1
 for epoch in range(num_epoch):
     #train
     model.train()
     for batch in train_loader:
         optim.zero_grad()
-        input_ids_a = batch('pre_requisite_input_ids').to(device)
-        input_ids_b = batch('concept_input_ids').to(device)
-        attention_a = batch('pre_requisite_attention_mask').to(device)
-        attention_b = batch('concept_attention_mask').to(device)
-        label = batch('label').to(device)
+        input_ids_a = batch['pre_requisite_input_ids'].to(device)
+        input_ids_b = batch['concept_input_ids'].to(device)
+        attention_a = batch['pre_requisite_attention_mask'].to(device)
+        attention_b = batch['concept_attention_mask'].to(device)
+        label = batch['label'].to(device)
         embed_a = model(input_ids_a, attention_a)[0]
         embed_b = model(input_ids_b, attention_b)[0]
         u = mean_pool(embed_a, attention_a)
@@ -127,11 +126,11 @@ for epoch in range(num_epoch):
     #eval
     model.eval()
     for batch in dev_loader:
-        input_ids_a = batch('pre_requisite_input_ids').to(device)
-        input_ids_b = batch('concept_input_ids').to(device)
-        attention_a = batch('pre_requisite_attention_mask').to(device)
-        attention_b = batch('concept_attention_mask').to(device)
-        label = batch('label').to(device)
+        input_ids_a = batch['pre_requisite_input_ids'].to(device)
+        input_ids_b = batch['concept_input_ids'].to(device)
+        attention_a = batch['pre_requisite_attention_mask'].to(device)
+        attention_b = batch['concept_attention_mask'].to(device)
+        label = batch['label'].to(device)
         embed_a = model(input_ids_a, attention_a)[0]
         embed_b = model(input_ids_b, attention_b)[0]
         u = mean_pool(embed_a, attention_a)
