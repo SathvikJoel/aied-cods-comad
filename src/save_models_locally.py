@@ -1,14 +1,27 @@
-from sentence_transformers import SentenceTransformer
+print("starting filee")
+# from sentence_transformers import SentenceTransformer
 import os
-from transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel, AutoModel, AutoTokenizer
+import argparse
+print("import is done")
 
-modelPath = os.path.join('..', 'models', 'bert-base-uncased')
+# initialize the parser
+parser = argparse.ArgumentParser(description='Downloading the model locally')
 
-model_name = 'bert-base-uncased'
+# add the parameter to select the model, it is a string
+parser.add_argument('--model', '-m', required = True, type =str, help = 'Select the appropriate model' )
+
+args = parser.parse_args()
+
+print(args)
+
+modelPath = os.path.join('..', 'models', args.model)
+
+model_name = args.model
 
 # Step 2: Instantiate the tokenizer and model
-tokenizer = BertTokenizer.from_pretrained(model_name)
-model = BertModel.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
 
 # Step 3: Save the tokenizer and model to the specified directory
 tokenizer.save_pretrained(modelPath)
