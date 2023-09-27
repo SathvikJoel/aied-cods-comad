@@ -25,6 +25,9 @@ parser.add_argument('--epochs', '-e', default=100, type=int, help='Select the nu
 # add the parameter to select the model, it is a string
 parser.add_argument('--model', '-m', required = True, type =str, help = 'Select the appropriate model' )
 
+# add the parameter to enable testing the model, it is a boolean
+parser.add_argument('--test', '-t', action='store_true', help='Enable testing the model')
+
 # parse the arguments
 args = parser.parse_args()
 
@@ -59,7 +62,9 @@ def get_sentence(video_name):
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 # read the train and dev datasets
-if args.dataset == 'with_agumentation':
+if args.test:
+    data = pd.read_csv(os.path.join('..', 'input', 'train_folds_test.csv'))
+elif args.dataset == 'with_agumentation':
     data = pd.read_csv(os.path.join('..', 'input', 'train_folds.csv'))
 else:
     data = pd.read_csv(os.path.join('..', 'input', 'train_folds_wo_agumentation.csv'))
